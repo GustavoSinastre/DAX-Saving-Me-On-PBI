@@ -1,0 +1,67 @@
+// Let's start with some simples codes
+// The file of example is uploaded in this repository
+
+// Sum
+TOTAL_VENDAS = SUM('BASE VENDAS'[QTDE])
+TOTAL_VENDAS_PRODUTO = CALCULATE(SUM('BASE VENDAS'[QTDE]), 'BASE VENDAS'[PRODUTO])
+TOTAL_VENDAS_DATA = CALCULATE(SUM('BASE VENDAS'[QTDE]), 'BASE VENDAS'[DATA])
+TOTAL_CHAMADAS = SUM('BASE VENDAS'[CHAMADAS])
+PERCENTUAL_CONVERSAO = DIVIDE(SUM('BASE VENDAS'[QTDE]), SUM('BASE VENDAS'[CHAMADAS]))
+// You can use only the TOTAL_VENDAS and put the fields DATA and PRODUTO in the lines of the table or matrix
+
+
+// Calculating a field with other field
+PERCENTUAL_CONVERSAO = 
+    DIVIDE(
+        SUM('BASE VENDAS'[QTDE]),
+        SUM('BASE VENDAS'[CHAMADAS]),
+        0 // If you want to use a value if error
+    )
+//
+
+
+// Now let's see another tipe of data
+DATA      | COLUNA                   | QTDE
+-------------------------------------------
+7/1/2024  | PRODUTO 1                | 1    
+7/1/2024  | PRODUTO 2                | 2    
+7/1/2024  | TOTAL PRODUTOS           | 3    
+7/1/2024  | CHAMADAS                 | 3    
+
+PERCENTUAL_CONVERSAO_TOTAL_PRODUTOS = 
+    VAR TOTAL_CHAMADAS = 
+        CALCULATE(
+            SUM('BASE VENDAS'[QTDE]),
+            'BASE VENDAS'[COLUNA] = "TOTAL CHAMADAS"
+        )
+    VAR TOTAL_PRODUTOS = 
+        CALCULATE(
+            SUM('BASE VENDAS'[QTDE]),
+            'BASE VENDAS'[COLUNA] = "TOTAL PRODUTOS"
+        )
+    RETURN 
+        DIVIDE(
+            TOTAL_PRODUTOS,
+            TOTAL_CHAMADAS,
+            0
+        )
+//
+
+
+PERCENTUAL_CONVERSAO_PRODUTOS = 
+    VAR TOTAL_CHAMADAS = 
+        CALCULATE(
+            SUM('BASE VENDAS'[QTDE]),
+            'BASE VENDAS'[COLUNA] = "TOTAL CHAMADAS"
+        )
+    VAR TOTAL_PRODUTOS_INDIVIDUAIS = 
+        CALCULATE(
+            SUM('BASE VENDAS'[QTDE]),
+            'BASE VENDAS'[COLUNA] <> "TOTAL PRODUTOS" // Excluding the total produtos
+        )
+    RETURN 
+        DIVIDE(
+            TOTAL_PRODUTOS_INDIVIDUAIS,
+            TOTAL_CHAMADAS,
+            0
+        )
